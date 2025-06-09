@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Rezerwacja - Teatr Ej.Aj</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Rezerwacja spektakli – Teatr Ej.Aj</h1>
+    <ul>
+        {% for event in events %}
+            <li>
+                <strong>{{ event.title }}</strong> – {{ event.date }}<br>
+                Dostępne miejsca: {{ event.available }}<br>
+                {% if event.available > 0 %}
+                    <a href="{{ url_for('reserve', event_id=event['id']) }}">
+                        <button>Zarezerwuj</button>
+                    </a>
+                {% else %}
+                    <em>Brak miejsc</em>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

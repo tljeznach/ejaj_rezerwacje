@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Potwierdzenie rezerwacji</title>
+</head>
+<body>
+    <h2>Dziękujemy, {{ name }}!</h2>
+    <p>Zarezerwowano miejsce na: <strong>{{ event.title }}</strong> – {{ event.date }}</p>
+    <a href="{{ url_for('index') }}">Powrót do listy spektakli</a>
+</body>
+</html>
