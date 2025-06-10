@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head><title>Logowanie administratora</title></head>
+<body>
+  <h1>Logowanie</h1>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <p style="color:red;">{{ message }}</p>
+    {% endfor %}
+  {% endwith %}
+  <form method="POST">
+    <input type="password" name="password" placeholder="Hasło">
+    <button type="submit">Zaloguj</button>
+  </form>
+</body>
+</html>

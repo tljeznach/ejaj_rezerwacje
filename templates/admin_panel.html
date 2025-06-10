@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Administratora</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 90%;
+            margin: auto;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px 12px;
+        }
+        th {
+            background-color: #eee;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;">Panel Administratora</h1>
+    <h2>Dodaj nowe wydarzenie</h2>
+    <form method="POST" action="{{ url_for('add_event') }}">
+        <label for="title">Tytuł:</label>
+        <input type="text" name="title" required>
+
+         <label for="date">Data (np. 2025-06-21):</label>
+         <input type="text" name="date" required>
+
+          <label for="available">Liczba miejsc:</label>
+         <input type="number" name="available" min="1" required>
+
+          <button type="submit">Dodaj wydarzenie</button>
+    </form>
+
+    <h2>Wydarzenia</h2>
+    <ul>
+        {% for event in events %}
+            <li>
+                {{ event.title }} ({{ event.date }}, miejsc: {{ event.available }})
+                <form method="POST" action="{{ url_for('delete_event', event_id=event.id) }}" style="display:inline;">
+                   <button type="submit" onclick="return confirm('Na pewno usunąć to wydarzenie?')">Usuń</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <p style="text-align: center;"><a href="{{ url_for('admin_logout') }}">Wyloguj się</a></p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Imię i nazwisko</th>
+                <th>Email</th>
+                <th>Wydarzenie</th>
+                <th>Akcje</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in reservations %}
+            <tr>
+                <td>{{ r.id }}</td>
+                <td>{{ r.name }}</td>
+                <td>{{ r.email }}</td>
+                <td>{{ r.event.title }}</td>
+                <td>
+                    <form action="{{ url_for('delete_reservation', reservation_id=r.id) }}" method="post" style="display:inline;">
+                        <button type="submit" onclick="return confirm('Na pewno usunąć?')">Usuń</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
