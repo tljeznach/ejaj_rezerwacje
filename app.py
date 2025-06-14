@@ -58,12 +58,14 @@ def reserve(event_id):
 
             # Wysyłanie maila z potwierdzeniem
             try:
+                print("Wysyłam maila do:", reservation.email)
                 msg = Message(
                     subject="Potwierdzenie rejestracji na spektakl",
                     recipients=[reservation.email],
                     body=f"Cześć {reservation.name}!\n\nZarejestrowano Cię na spektakl „{event.title}” w dniu {event.date}.\n\nDo zobaczenia!",
                 )
                 mail.send(msg)
+                print("Mail wysłany!")
             except Exception as e:
                 print("Błąd przy wysyłce maila:", e)
 
@@ -90,17 +92,26 @@ def admin_logout():
     session.pop("logged_in", None)
     return redirect(url_for("admin_login"))
 
-@app.route("/admin/delete/<int:reservation_id>", methods=["POST"])
+@app.route("/admin/delete_reservation/<int:reservation_id>", methods=["POST"])
 def delete_reservation(reservation_id):
     if not is_logged_in():
         return redirect(url_for("admin_login"))
 
     reservation = Reservation.query.get_or_404(reservation_id)
-    event = reservation.event
+    event = Event.query.get(reservation.event_id)
+    
     db.session.delete(reservation)
-    event.available += 1  # odzyskujemy jedno miejsce
+    event.available += 1
     db.session.commit()
-    return redirect(url_for('admin_panel'))
+
+    # Przekieruj zgodnie z parametrem
+    redirect_to = request.args.get("redirect_to")
+    event_id = request.args.get("event_id")
+    if redirect_to == "view_reservations_for_event" and event_id:
+        return redirect(url_for("view_reservations_for_event", event_id=event_id))
+    
+    return redirect(url_for("admin_panel"))
+
 
 @app.route("/admin/delete_event/<int:event_id>", methods=["POST"])
 def delete_event(event_id):
@@ -117,14 +128,26 @@ def delete_event(event_id):
     return redirect(url_for("admin_panel"))
 
 
+@app.route("/admin/event/<int:event_id>")
+def view_reservations_for_event(event_id):
+    if not is_logged_in():
+        return redirect(url_for("admin_login"))
+
+    event = Event.query.get_or_404(event_id)
+    reservations = sorted(event.reservations, key=lambda r: r.name.lower())
+    total = event.available + len(reservations)
+    taken = len(reservations)
+
+    return render_template("event_reservations.html", event=event, reservations=reservations, total=total, taken=taken)
+
+
 @app.route("/admin")
 def admin_panel():
     if not is_logged_in():
         return redirect(url_for("admin_login"))
+    events = Event.query.all()
+    return render_template("admin_panel.html", events=events)
 
-    reservations = Reservation.query.all()
-    events = Event.query.all()  # ← dodaj to
-    return render_template("admin_panel.html", reservations=reservations, events=events)
 
 
 @app.route("/admin/add_event", methods=["POST"])

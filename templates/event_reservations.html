@@ -1,0 +1,31 @@
+<h1>Rezerwacje na "{{ event.title }}"</h1>
+<p>Data: {{ event.date }}</p>
+<p>Zajęte miejsca: {{ taken }} / {{ total }}</p>
+
+<table border="1" cellpadding="5">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Imię i nazwisko</th>
+      <th>Email</th>
+      <th>Akcja</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in reservations %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ r.name }}</td>
+        <td>{{ r.email }}</td>
+        <td>
+          <form action="{{ url_for('delete_reservation', reservation_id=r.id, redirect_to='view_reservations_for_event', event_id=event.id) }}" method="post" onsubmit="return confirm('Na pewno usunąć tę rezerwację?');">
+            <button type="submit">Usuń</button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+
+<a href="{{ url_for('admin_panel') }}">← Powrót do panelu</a>

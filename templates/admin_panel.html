@@ -21,20 +21,26 @@
 <body>
     <h1 style="text-align: center;">Panel Administratora</h1>
     <h2>Dodaj nowe wydarzenie</h2>
-    <form method="POST" action="{{ url_for('add_event') }}">
-        <label for="title">Tytuł:</label>
-        <input type="text" name="title" required>
-
-         <label for="date">Data (np. 2025-06-21):</label>
-         <input type="text" name="date" required>
-
-          <label for="available">Liczba miejsc:</label>
-         <input type="number" name="available" min="1" required>
-
-          <button type="submit">Dodaj wydarzenie</button>
+    <form method="POST">
+    <div style="margin-bottom: 10px;">
+        <label for="title" style="display: inline-block; width: 120px;">Tytuł:</label>
+        <input type="text" id="title" name="title" required>
+    </div>
+    
+    <div style="margin-bottom: 10px;">
+        <label for="date" style="display: inline-block; width: 120px;">Data:</label>
+        <input type="date" id="date" name="date" placeholder="YYYY-MM-DD" required>
+    </div>
+    
+    <div style="margin-bottom: 10px;">
+        <label for="available" style="display: inline-block; width: 120px;">Liczba miejsc:</label>
+        <input type="number" id="available" name="available" min="1" required>
+    </div>
+    
+    <button type="submit">Dodaj wydarzenie</button>
     </form>
 
-    <h2>Wydarzenia</h2>
+    <!-- <h2>Wydarzenia</h2>
     <ul>
         {% for event in events %}
             <li>
@@ -44,35 +50,20 @@
                 </form>
             </li>
         {% endfor %}
+    </ul> -->
+
+
+    <h2>Wydarzenia</h2>
+    <ul>
+      {% for event in events %}
+        <li>
+        <strong>{{ event.title }}</strong> – {{ event.date }}<br>
+              <a href="{{ url_for('view_reservations_for_event', event_id=event.id) }}">
+                Zobacz rezerwacje ({{ event.reservations | length }} zajętych z {{ event.available + event.reservations|length }})
+              </a>
+        </li>
+          {% endfor %}
     </ul>
-
     <p style="text-align: center;"><a href="{{ url_for('admin_logout') }}">Wyloguj się</a></p>
-
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Imię i nazwisko</th>
-                <th>Email</th>
-                <th>Wydarzenie</th>
-                <th>Akcje</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for r in reservations %}
-            <tr>
-                <td>{{ r.id }}</td>
-                <td>{{ r.name }}</td>
-                <td>{{ r.email }}</td>
-                <td>{{ r.event.title }}</td>
-                <td>
-                    <form action="{{ url_for('delete_reservation', reservation_id=r.id) }}" method="post" style="display:inline;">
-                        <button type="submit" onclick="return confirm('Na pewno usunąć?')">Usuń</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
 </body>
 </html>
